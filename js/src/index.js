@@ -5,21 +5,23 @@ const DataTypes = require("sequelize/lib/data-types");
 const yargs     = require("yargs");
 const fs        = require("fs");
 const {hideBin} = require("yargs/helpers");
+const {resolve} = require("path");
 
 // get sql state of sequelize models
-const loadSQL = (path, driver) => {
+const loadSQL = (relativePath, driver) => {
     sequelize = new Sequelize({
         dialect: driver,
     });
-    if (!fs.existsSync(path)) {
+    if (!fs.existsSync(relativePath)) {
         throw new Error("path does not exist");
     }
+    const absolutePath = resolve(relativePath)
     // get all models from files in models folder
-    const files = fs.readdirSync(path);
+    const files = fs.readdirSync(absolutePath);
     for (const file of files) {
         if (file.match(/\.js$/) !== null && file !== 'index.js') {
             const name = file.replace('.js', '');
-            require(path + '/' + name)(sequelize, DataTypes);
+            require(absolutePath + '/' + name)(sequelize, DataTypes);
         }
     }
 
