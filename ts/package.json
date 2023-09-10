@@ -1,6 +1,6 @@
 {
   "name": "ts-atlas-provider-sequelize",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "",
   "bin": "src/index.ts",
   "keywords": [],
@@ -13,12 +13,13 @@
     "mysql2": "^3.6.0",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
-    "reflect-metadata": "^0.1.13",
-    "sequelize": "^6.32.1",
-    "sequelize-typescript": "^2.1.5",
     "sqlite3": "^5.1.6",
     "tedious": "^16.4.0",
     "yargs": "^17.7.2"
+  },
+  "peerDependencies": {
+    "sequelize-typescript": "^2.1.5",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
