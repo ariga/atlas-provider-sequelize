@@ -1,6 +1,6 @@
 {
-  "name": "ts-atlas-provider-sequelize",
-  "version": "0.0.2",
+  "name": "@ariga/ts-atlas-provider-sequelize",
+  "version": "0.0.0",
   "description": "",
   "bin": "src/index.ts",
   "keywords": [],

@@ -10,20 +10,29 @@ curl -sSf https://atlasgo.sh | sh
 See [atlasgo.io](https://atlasgo.io/getting-started#installation) for more installation options.
 
 ### Usage
-run npm install in your project directory:
+
+Make sure your dependencies are installed:
 ```bash
 npm i 
 ```
+
+#### TypeScript
+For using TypeScript, install the following dependency:
+```bash
+npm i @ariga/ts-atlas-provider-sequelize
+```
+
 In your project directory, create a new file named `atlas.hcl` with the following contents:
 
 ```hcl
 data "external_schema" "sequelize" {
   program = [
     "npx",
-    "@ariga/atlas-provider-sequelize",
+    "--yes",
+    "@ariga/atlas-provider-sequelize", // or @ariga/ts-atlas-provider-sequelize for TypeScript
     "load",
     "--path", "./path/to/models",
-    "--dialect", "mysql", // | postgres | sqlite | mssql | mariadb
+    "--dialect", "mysql", // mariadb | postgres | sqlite | mssql
   ]
 }
 
@@ -40,6 +49,7 @@ env "sequelize" {
   }
 }
 ```
+
 ### Supported Databases
 
 The provider supports the following databases:
