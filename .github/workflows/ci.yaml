@@ -26,7 +26,7 @@ jobs:
         run: npm install
         working-directory: ./js
       - name: Lint check
-        run: npm run fmt
+        run: npm run fmt-check
         working-directory: ./js
   lintTS:
     runs-on: ubuntu-latest
@@ -45,5 +45,5 @@ jobs:
         run: npm install
         working-directory: ./ts
       - name: Lint check
-        run: npm run fmt
+        run: npm run fmt-check
         working-directory: ./ts

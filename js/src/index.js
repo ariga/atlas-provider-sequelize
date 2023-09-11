@@ -58,7 +58,7 @@ const loadSQL = (relativePath, driver) => {
 
 yargs(hideBin(process.argv))
   .usage(
-    "npx @ariga/atlas-provider-sequelize load --path ./models --dialect mysql"
+    "npx @ariga/atlas-provider-sequelize load --path ./models --dialect mysql",
   )
   .alias("h", "help");
 yargs
@@ -84,6 +84,6 @@ yargs
       } catch (e) {
         console.error(e.message);
       }
-    }
+    },
   )
   .parse();
