@@ -18,10 +18,20 @@ const loadSQL = (relativePath, driver) => {
     const absolutePath = resolve(relativePath)
     // get all models from files in models folder
     const files = fs.readdirSync(absolutePath);
+    const db = {};
     for (const file of files) {
         if (file.match(/\.js$/) !== null && file !== 'index.js') {
             const name = file.replace('.js', '');
-            require(absolutePath + '/' + name)(sequelize, DataTypes);
+            const m = require(absolutePath + '/' + name)(sequelize, DataTypes);
+            if (m?.name) {
+                db[m.name] = m;
+            }
+        }
+    }
+    // create associations between models
+    for (const modelName of Object.keys(db)) {
+        if (db[modelName]?.associate) {
+            db[modelName].associate(db);
         }
     }
 

@@ -16,10 +16,11 @@ Make sure your dependencies are installed:
 npm i 
 ```
 
-#### TypeScript
-For using TypeScript, install the following dependency:
+Install the provider
 ```bash
 npm i @ariga/ts-atlas-provider-sequelize
+# for TypeScript:
+# npm i @ariga/ts-atlas-provider-sequelize
 ```
 
 In your project directory, create a new file named `atlas.hcl` with the following contents:
@@ -28,7 +29,6 @@ In your project directory, create a new file named `atlas.hcl` with the followin
 data "external_schema" "sequelize" {
   program = [
     "npx",
-    "--yes",
     "@ariga/atlas-provider-sequelize", // or @ariga/ts-atlas-provider-sequelize for TypeScript
     "load",
     "--path", "./path/to/models",

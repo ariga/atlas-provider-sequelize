@@ -1,6 +1,6 @@
 {
   "name": "@ariga/atlas-provider-sequelize",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "bin": "src/index.js",
   "keywords": [],
