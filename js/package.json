@@ -1,0 +1,21 @@
+{
+  "name": "@ariga/atlas-provider-sequelize",
+  "version": "0.0.1",
+  "description": "",
+  "bin": "src/index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mysql2": "^3.6.0",
+    "mariadb": "^3.2.0",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "sqlite3": "^5.1.6",
+    "tedious": "^16.4.0",
+    "yargs": "^17.7.2"
+  },
+  "peerDependencies": {
+    "sequelize": "^6.32.1"
+  }
+}
