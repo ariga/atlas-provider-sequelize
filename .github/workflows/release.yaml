@@ -1,0 +1,38 @@
+name: Release to NPM
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: Version to release, e.g. "v0.1.2"
+        required: false
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  npm-publish:
+    strategy:
+      matrix:
+        language: [ js, ts ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.16.0
+      - name: Set version env
+        id: set_version
+        ## if version is not provided, use the tag name
+        run: echo ::set-output name=version::${{ github.event.inputs.version || github.ref }}
+      - name: Update version of npm package
+        working-directory: ./${{ matrix.language }}
+        env:
+          RELEASE_VERSION: ${{ steps.set_version.outputs.tag }}
+        run: |
+          echo version $RELEASE_VERSION
+#      - name: publish the npm package
+#        uses: JS-DevTools/npm-publish@v2
+#        with:
+#          package: ./${{ matrix.language }}
+#          token: ${{ secrets.NPM_TOKEN }
