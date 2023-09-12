@@ -47,3 +47,35 @@ jobs:
       - name: Lint check
         run: npm run fmt-check
         working-directory: ./ts
+  integration-test-JS:
+    strategy:
+      matrix:
+        dialect: [ mysql, postgres, sqlite ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.16.0
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ./js/node_modules
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: node_modules-
+      - name: Install
+        run: npm install
+        working-directory: ./js
+      - uses: ariga/setup-atlas@master
+      - working-directory: ./js/testdata
+        run: |
+          atlas migrate diff --env sequelize --var dialect=${{ matrix.dialect }}
+      - name: Verify migrations generated
+        run: |
+          status=$(git status --porcelain)
+          if [ -n "$status" ]; then
+            echo "you need to run 'atlas migrate diff --env sequelize' and commit the changes"
+            echo "$status"
+            git --no-pager diff
+            exit 1
+           fi
