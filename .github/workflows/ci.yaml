@@ -9,7 +9,10 @@ permissions:
   contents: read
   packages: read
 jobs:
-  lintJS:
+  lint:
+    strategy:
+      matrix:
+        language: [ js, ts ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,38 +22,20 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v3
         with:
-          path: ./js/node_modules
+          path: ./${{ matrix.language }}/node_modules
           key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: node_modules-
       - name: Install
         run: npm install
-        working-directory: ./js
+        working-directory: ./${{ matrix.language }}
       - name: Lint check
         run: npm run fmt-check
-        working-directory: ./js
-  lintTS:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.16.0
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: ./ts/node_modules
-          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: node_modules-
-      - name: Install
-        run: npm install
-        working-directory: ./ts
-      - name: Lint check
-        run: npm run fmt-check
-        working-directory: ./ts
-  integration-test-TS:
+        working-directory: ./${{ matrix.language }}
+  integration-test:
     strategy:
       matrix:
         dialect: [ mysql, postgres, sqlite ]
+        language: [ js, ts ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -60,14 +45,14 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v3
         with:
-          path: ./ts/node_modules
+          path: ./${{ matrix.language }}/node_modules
           key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: node_modules-
       - name: Install
         run: npm install
-        working-directory: ./ts
+        working-directory: ./${{ matrix.language }}
       - uses: ariga/setup-atlas@master
-      - working-directory: ./ts/testdata
+      - working-directory: ./${{ matrix.language }}/testdata
         run: |
           atlas migrate diff --env sequelize --var dialect=${{ matrix.dialect }}
       - name: Verify migrations generated
