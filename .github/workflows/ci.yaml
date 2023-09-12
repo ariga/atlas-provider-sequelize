@@ -47,3 +47,27 @@ jobs:
       - name: Lint check
         run: npm run fmt-check
         working-directory: ./ts
+  integration-test-JS:
+    strategy:
+      matrix:
+        dialect: [ mysql, postgres, sqlite ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+      - uses: ariga/setup-atlas@master
+      - working-directory: js/testdata
+        run: |
+          atlas migrate diff --env sequelize --var dialect=${{ matrix.dialect }}
+      - name: Verify migrations generated
+        run: |
+          status=$(git status --porcelain)
+          if [ -n "$status" ]; then
+            echo "you need to run 'atlas migrate diff --env gorm' and commit the changes"
+            echo "$status"
+            git --no-pager diff
+            exit 1
+           fi
+            
