@@ -12,6 +12,7 @@ locals {
 
 data "external_schema" "sequelize" {
   program = [
+    "npx",
     "ts-node",
     "load-models.ts",
      var.dialect,

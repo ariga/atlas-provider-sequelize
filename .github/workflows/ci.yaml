@@ -67,8 +67,6 @@ jobs:
            fi
       - name: Run Test as ${{ matrix.language }} Script
         working-directory: ./${{ matrix.language }}/testdata
-        # TODO: remove the check if file exists once we support loading models from ts script
-        if:  ${{ hashFiles('atlas-script.hcl') != '' }}
         run: |
           atlas migrate diff --env sequelize -c "file://atlas-script.hcl" --var dialect=${{ matrix.dialect }}
       - name: Verify migrations generated
