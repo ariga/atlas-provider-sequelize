@@ -20,7 +20,6 @@ const loadSQL = (relativePath, driver) => {
     if (file.match(/\.js$/) !== null && file !== "index.js") {
       const name = file.replace(".js", "");
       const m = require(absolutePath + "/" + name);
-      // push model to array
       models.push(m);
     }
   }
