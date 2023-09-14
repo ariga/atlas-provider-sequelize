@@ -19,7 +19,7 @@ export const loadSequelizeModels = (dialect: string, models: ModelCtor[]) => {
     throw new Error("no models found");
   }
   let sql = "";
-  for (const model of models) {
+  for (const model of orderedModels) {
     const def = sequelize.modelManager.getModel(model.name);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
