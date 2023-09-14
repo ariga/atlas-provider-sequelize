@@ -5,7 +5,7 @@ const fs = require("fs");
 const { hideBin } = require("yargs/helpers");
 const process = require("process");
 const { resolve } = require("path");
-const loadModels = require("./sequelize_schema");
+const loadSequelizeModels = require("./sequelize_schema");
 
 // get sql state of sequelize models
 const loadSQL = (relativePath, driver) => {
@@ -24,7 +24,7 @@ const loadSQL = (relativePath, driver) => {
       models.push(m);
     }
   }
-  return loadModels(driver, ...models);
+  return loadSequelizeModels(driver, ...models);
 };
 
 yargs(hideBin(process.argv))
