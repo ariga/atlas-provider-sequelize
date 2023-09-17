@@ -31,7 +31,7 @@ jobs:
       - name: Lint check
         run: npm run fmt-check
         working-directory: ./${{ matrix.language }}
-  integration-test:
+  integration-tests:
     strategy:
       matrix:
         dialect: [ mysql, postgres, sqlite ]
@@ -52,9 +52,25 @@ jobs:
         run: npm install
         working-directory: ./${{ matrix.language }}
       - uses: ariga/setup-atlas@master
-      - working-directory: ./${{ matrix.language }}/testdata
+      - name: Run Test as Standalone
+        working-directory: ./${{ matrix.language }}/testdata
         run: |
-          atlas migrate diff --env sequelize --var dialect=${{ matrix.dialect }}
+          atlas migrate diff --env sequelize -c "file://atlas-standalone.hcl" --var dialect=${{ matrix.dialect }}
+      - name: Verify migrations generated
+        run: |
+          status=$(git status --porcelain)
+          if [ -n "$status" ]; then
+            echo "you need to run 'atlas migrate diff --env sequelize' and commit the changes"
+            echo "$status"
+            git --no-pager diff
+            exit 1
+           fi
+      - name: Run Test as ${{ matrix.language }} Script
+        working-directory: ./${{ matrix.language }}/testdata
+        # TODO: remove the check if file exists once we support loading models from ts script
+        if:  ${{ hashFiles('atlas-script.hcl') != '' }}
+        run: |
+          atlas migrate diff --env sequelize -c "file://atlas-script.hcl" --var dialect=${{ matrix.dialect }}
       - name: Verify migrations generated
         run: |
           status=$(git status --porcelain)
