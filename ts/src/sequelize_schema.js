@@ -1,10 +1,10 @@
 "use strict";
 exports.__esModule = true;
-exports.loadSequelizeModels = void 0;
+exports.loadModels = void 0;
 var sequelize_typescript_1 = require("sequelize-typescript");
 var validDialects = ["mysql", "postgres", "sqlite", "mariadb", "mssql"];
 // load sql state of sequelize models
-var loadSequelizeModels = function (dialect, models) {
+var loadModels = function (dialect, models) {
     var _a;
     if (!validDialects.includes(dialect)) {
         throw new Error("Invalid dialect ".concat(dialect));
@@ -39,4 +39,4 @@ var loadSequelizeModels = function (dialect, models) {
     }
     return sql;
 };
-exports.loadSequelizeModels = loadSequelizeModels;
+exports.loadModels = loadModels;

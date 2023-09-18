@@ -4,7 +4,7 @@ import { Sequelize, SequelizeOptions } from "sequelize-typescript";
 const validDialects = ["mysql", "postgres", "sqlite", "mariadb", "mssql"];
 
 // load sql state of sequelize models
-export const loadSequelizeModels = (dialect: string, models: ModelCtor[]) => {
+export const loadModels = (dialect: string, models: ModelCtor[]) => {
   if (!validDialects.includes(dialect)) {
     throw new Error(`Invalid dialect ${dialect}`);
   }
