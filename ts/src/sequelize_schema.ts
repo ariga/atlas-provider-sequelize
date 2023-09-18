@@ -34,6 +34,8 @@ export const loadSequelizeModels = (dialect: string, models: ModelCtor[]) => {
       // @ts-ignore
       sequelize
         .getQueryInterface()
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         .queryGenerator.createTableQuery(
           def.tableName,
           attr,
