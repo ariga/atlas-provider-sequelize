@@ -126,6 +126,9 @@ from its latest revision to the current Sequelize schema.
 atlas migrate diff --env sequelize 
 ````
 
+### Typescript
+for typescript support, see the [ts-atlas-provider-sequelize](https://github.com/ariga/atlas-provider-sequelize/tree/master/ts) README.
+
 ### Supported Databases
 
 The provider supports the following databases:
@@ -134,6 +137,7 @@ The provider supports the following databases:
 * PostgreSQL
 * SQLite
 * Microsoft SQL Server
+
 ### Issues
 
 Please report any issues or feature requests in the [ariga/atlas](https://github.com/ariga/atlas/issues) repository.

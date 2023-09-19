@@ -1,7 +1,8 @@
 {
   "name": "@ariga/ts-atlas-provider-sequelize",
   "version": "0.0.0",
-  "description": "",
+  "description": "Load Sequelize-TypeScript models into an Atlas project.",
+  "homepage": "https://github.com/ariga/atlas-provider-sequelize",
   "bin": "src/index.ts",
   "keywords": [],
   "author": "",
