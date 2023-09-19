@@ -54,7 +54,9 @@ class Email extends Model {
   @Column(DataType.INTEGER)
   contact_id!: number;
 
-  @BelongsTo(() => Contact)
+  @BelongsTo(() => Contact, {
+    onDelete: "CASCADE",
+  })
   contact!: Contact;
 
   @CreatedAt

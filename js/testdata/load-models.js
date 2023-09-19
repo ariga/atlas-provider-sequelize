@@ -8,5 +8,4 @@ const loadModels = require("../index");
 // parse the second argument as the dialect
 const dialect = process.argv[2];
 
-// load the models
 console.log(loadModels(dialect, ingredient, recipe, recipeIngredient));

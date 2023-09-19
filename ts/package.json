@@ -8,7 +8,8 @@
   "license": "ISC",
   "scripts": {
     "fmt": "eslint src/**/*.ts --fix && prettier --write .",
-    "fmt-check": "npx eslint ./src --max-warnings=0 && prettier --check ."
+    "fmt-check": "eslint src/**/*.ts --max-warnings=0 && prettier --check .",
+    "build": "tsc -d src/sequelize_schema.ts"
   },
   "dependencies": {
     "@types/node": "^20.5.7",
