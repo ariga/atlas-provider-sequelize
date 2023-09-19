@@ -1,32 +1,38 @@
 # atlas-provider-sequelize
+
 Load [Sequelize](https://sequelize.org/) models into an [Atlas](https://atlasgo.io) project.
 
 ### Use-cases
+
 1. **Declarative migrations** - use a Terraform-like `atlas schema apply --env sequelize` to apply your Sequelize schema to the database.
 2. **Automatic migration planning** - use `atlas migrate diff --env sequelize` to automatically plan a migration from  
-  the current database version to the Sequelize schema.
+   the current database version to the Sequelize schema.
 
 ### Installation
 
 Install Atlas from macOS or Linux by running:
+
 ```bash
 curl -sSf https://atlasgo.sh | sh
 ```
+
 See [atlasgo.io](https://atlasgo.io/getting-started#installation) for more installation options.
 
 Install the provider by running:
+
 ```bash
 npm i @ariga/atlas-provider-sequelize
 ```
 
 Make sure all your Node dependencies are installed by running:
+
 ```bash
 npm i
 ```
 
-#### Standalone 
+#### Standalone
 
-If all of your Sequelize models exist in a single Node module, 
+If all of your Sequelize models exist in a single Node module,
 you can use the provider directly to load your Sequelize schema into Atlas.
 
 In your project directory, create a new file named `atlas.hcl` with the following contents:
@@ -56,7 +62,7 @@ env "sequelize" {
 }
 ```
 
-#### As JS Script 
+#### As JS Script
 
 If you want to use the provider as JS script, you can use the provider as follows:
 
@@ -112,31 +118,30 @@ before applying it to the database.
 ```bash
 atlas schema apply --env sequelize -u "mysql://root:password@localhost:3306/mydb"
 ```
+
 Where the `-u` flag accepts the [URL](https://atlasgo.io/concepts/url) to the
 target database.
 
 #### Diff
 
-Atlas supports a [version migration](https://atlasgo.io/concepts/declarative-vs-versioned#versioned-migrations) 
+Atlas supports a [version migration](https://atlasgo.io/concepts/declarative-vs-versioned#versioned-migrations)
 workflow, where each change to the database is versioned and recorded in a migration file. You can use the
 `atlas migrate diff` command to automatically generate a migration file that will migrate the database
 from its latest revision to the current Sequelize schema.
 
 ```bash
-atlas migrate diff --env sequelize 
-````
-
-### Typescript
-for typescript support, see the [ts-atlas-provider-sequelize](https://github.com/ariga/atlas-provider-sequelize/tree/master/ts) README.
+atlas migrate diff --env sequelize
+```
 
 ### Supported Databases
 
 The provider supports the following databases:
-* MySQL
-* MariaDB
-* PostgreSQL
-* SQLite
-* Microsoft SQL Server
+
+- MySQL
+- MariaDB
+- PostgreSQL
+- SQLite
+- Microsoft SQL Server
 
 ### Issues
 

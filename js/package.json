@@ -1,7 +1,8 @@
 {
   "name": "@ariga/atlas-provider-sequelize",
   "version": "0.0.1",
-  "description": "",
+  "description": "Load Sequelize models into an Atlas project.",
+  "homepage": "https://github.com/ariga/atlas-provider-sequelize",
   "bin": "src/index.js",
   "keywords": [],
   "author": "",
