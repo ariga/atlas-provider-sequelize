@@ -5,8 +5,7 @@ Load [Sequelize-TypeScript](https://github.com/sequelize/sequelize-typescript) m
 ### Use-cases
 
 1. **Declarative migrations** - use a Terraform-like `atlas schema apply --env sequelize` to apply your Sequelize schema to the database.
-2. **Automatic migration planning** - use `atlas migrate diff --env sequelize` to automatically plan a migration from  
-   the current database version to the Sequelize schema.
+2. **Automatic migration planning** - use `atlas migrate diff --env sequelize` to automatically plan a migration from the current database version to the Sequelize schema.
 
 ### Installation
 
