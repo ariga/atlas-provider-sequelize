@@ -1,7 +1,5 @@
 # atlas-provider-sequelize
 
-![CI](https://github.com/ariga/atlas-provider-sequelize/actions/workflows/ci.yaml/badge.svg)
-
 Load [Sequelize](https://sequelize.org/) models into an [Atlas](https://atlasgo.io) project.
 
 ### Use-cases
