@@ -12,6 +12,10 @@ export const loadModels = (dialect: string, models: ModelCtor[]) => {
     dialect: dialect,
     models: models,
   } as SequelizeOptions);
+  return loadSQL(sequelize);
+};
+
+export const loadSQL = (sequelize: Sequelize) => {
   const orderedModels = sequelize.modelManager
     .getModelsTopoSortedByForeignKey()
     ?.reverse();
@@ -21,9 +25,10 @@ export const loadModels = (dialect: string, models: ModelCtor[]) => {
   let sql = "";
   for (const model of orderedModels) {
     const def = sequelize.modelManager.getModel(model.name);
+    const queryGenerator = sequelize.getQueryInterface().queryGenerator;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const attr = sequelize.getQueryInterface().queryGenerator.attributesToSQL(
+    const attr = queryGenerator.attributesToSQL(
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       def.getAttributes(),
@@ -32,15 +37,21 @@ export const loadModels = (dialect: string, models: ModelCtor[]) => {
     sql +=
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      sequelize
-        .getQueryInterface()
+      queryGenerator.createTableQuery(
+        def.tableName,
+        attr,
+        Object.assign({}, def.options),
+      ) + "\n";
+    for (const index of def.options?.indexes ?? []) {
+      sql +=
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        .queryGenerator.createTableQuery(
+        queryGenerator.addIndexQuery(
           def.tableName,
-          attr,
+          index,
           Object.assign({}, def.options),
-        ) + "\n";
+        ) + ";\n";
+    }
   }
   return sql;
 };

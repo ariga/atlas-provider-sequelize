@@ -45,7 +45,7 @@ const loadSequelizeModels = (dialect, ...models) => {
       sql +=
         sequelize
           .getQueryInterface()
-          .queryGenerator.addIndexQuery(def.tableName, index) + "\n";
+          .queryGenerator.addIndexQuery(def.tableName, index) + ";\n";
     }
   }
   return sql;

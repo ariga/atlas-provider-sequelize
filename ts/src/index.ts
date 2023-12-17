@@ -5,51 +5,7 @@ import { hideBin } from "yargs/helpers";
 import fs from "fs";
 import { Sequelize, SequelizeOptions } from "sequelize-typescript";
 import path from "path";
-
-// get sql state of sequelize models
-const loadSQL = async (
-  relativePath: string,
-  driver: string,
-): Promise<string> => {
-  if (!fs.existsSync(relativePath)) {
-    throw new Error("path does not exist");
-  }
-  const absolutePath = path.resolve(relativePath);
-  const sequelize = new Sequelize({
-    dialect: driver,
-    models: [absolutePath + "/*.ts"],
-  } as SequelizeOptions);
-
-  const models = sequelize.modelManager
-    .getModelsTopoSortedByForeignKey()
-    ?.reverse();
-  if (!models) {
-    throw new Error("no models found");
-  }
-  let sql = "";
-  for (const model of models) {
-    const def = sequelize.modelManager.getModel(model.name);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const attr = sequelize.getQueryInterface().queryGenerator.attributesToSQL(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      def.getAttributes(),
-      Object.assign({}, def.options),
-    );
-    sql +=
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      sequelize
-        .getQueryInterface()
-        .queryGenerator.createTableQuery(
-          def.tableName,
-          attr,
-          Object.assign({}, def.options),
-        ) + "\n";
-  }
-  return sql;
-};
+import { loadSQL } from "./sequelize_schema";
 
 const y = yargs(hideBin(process.argv))
   .usage(
@@ -74,9 +30,16 @@ y.command(
   },
   async function (argv) {
     try {
-      loadSQL(argv.path, argv.dialect).then((sql) => {
-        console.log(sql);
-      });
+      if (!fs.existsSync(argv.path)) {
+        console.error(`path ${argv.path} does not exist`);
+        return;
+      }
+      const absolutePath = path.resolve(argv.path);
+      const sequelize = new Sequelize({
+        dialect: argv.dialect,
+        models: [absolutePath + "/*.ts"],
+      } as SequelizeOptions);
+      console.log(loadSQL(sequelize));
     } catch (e) {
       if (e instanceof Error) {
         console.error(e.message);
