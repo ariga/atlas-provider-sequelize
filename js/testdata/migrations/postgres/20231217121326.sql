@@ -31,3 +31,5 @@ CREATE TABLE "public"."RecipeIngredients" (
   CONSTRAINT "RecipeIngredients_ingredientId_fkey" FOREIGN KEY ("ingredientId") REFERENCES "public"."Ingredients" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "RecipeIngredients_recipeId_fkey" FOREIGN KEY ("recipeId") REFERENCES "public"."Recipes" ("id") ON UPDATE CASCADE ON DELETE CASCADE
 );
+-- Create index "recipe_ingredients_meassurement_type_meassurement_amount" to table: "RecipeIngredients"
+CREATE UNIQUE INDEX "recipe_ingredients_meassurement_type_meassurement_amount" ON "public"."RecipeIngredients" ("meassurementType", "meassurementAmount");
