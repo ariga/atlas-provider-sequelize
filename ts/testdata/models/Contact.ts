@@ -12,6 +12,7 @@ import {
   AfterCreate,
   HasMany,
   Length,
+  Index,
 } from "sequelize-typescript";
 import Phone from "./Phone";
 import Email from "./Email";
@@ -41,11 +42,13 @@ class Contact extends Model {
   @AllowNull(false)
   @Length({ min: 3, max: 45 })
   @Column(DataType.STRING(45))
+  @Index({ name: "name-alias", unique: true })
   name!: string;
 
   @AllowNull(false)
   @Length({ min: 3, max: 45 })
   @Column(DataType.STRING(45))
+  @Index({ name: "name-alias", unique: true })
   alias!: string;
 
   @HasMany(() => Phone, { onDelete: "CASCADE" })

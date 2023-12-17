@@ -7,6 +7,8 @@ CREATE TABLE "public"."contact" (
   "updated_at" timestamptz NOT NULL,
   PRIMARY KEY ("id")
 );
+-- Create index "name-alias" to table: "contact"
+CREATE UNIQUE INDEX "name-alias" ON "public"."contact" ("name", "alias");
 -- Create "email" table
 CREATE TABLE "public"."email" (
   "id" serial NOT NULL,

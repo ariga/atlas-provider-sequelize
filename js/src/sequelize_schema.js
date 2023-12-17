@@ -40,6 +40,13 @@ const loadSequelizeModels = (dialect, ...models) => {
         .queryGenerator.createTableQuery(def.tableName, attr, {
           ...def.options,
         }) + "\n";
+
+    for (const index of def.options.indexes) {
+      sql +=
+        sequelize
+          .getQueryInterface()
+          .queryGenerator.addIndexQuery(def.tableName, index) + ";\n";
+    }
   }
   return sql;
 };
