@@ -22,6 +22,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       paranoid: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ["meassurementType", "meassurementAmount"],
+        },
+      ],
     },
   );
 
