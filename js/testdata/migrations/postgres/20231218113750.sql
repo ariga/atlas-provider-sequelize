@@ -1,3 +1,5 @@
+-- Create enum type "enum_Recipes_meal"
+CREATE TYPE "public"."enum_Recipes_meal" AS ENUM ('breakfast', 'lunch', 'dinner', 'dessert');
 -- Create "Ingredients" table
 CREATE TABLE "public"."Ingredients" (
   "id" serial NOT NULL,
@@ -13,6 +15,7 @@ CREATE TABLE "public"."Recipes" (
   "title" character varying(255) NOT NULL,
   "description" text NOT NULL,
   "instructions" text NOT NULL,
+  "meal" "public"."enum_Recipes_meal" NULL DEFAULT 'lunch',
   "createdAt" timestamptz NOT NULL,
   "updatedAt" timestamptz NOT NULL,
   "deletedAt" timestamptz NULL,

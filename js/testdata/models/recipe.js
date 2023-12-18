@@ -15,6 +15,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      meal: {
+        type: DataTypes.ENUM,
+        values: ["breakfast", "lunch", "dinner", "dessert"],
+        defaultValue: "lunch",
+      },
     },
     {
       paranoid: true,
