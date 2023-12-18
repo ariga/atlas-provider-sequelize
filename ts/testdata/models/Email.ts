@@ -23,6 +23,12 @@ const EMAIL_VALIDATION = {
   addressMaxLength: 190,
 };
 
+enum Subscription {
+  FREE = "free",
+  BASIC = "basic",
+  PREMIUM = "premium",
+}
+
 @DefaultScope(() => ({
   attributes: {
     exclude: ["contact_id", "created_at", "updated_at"],
@@ -48,6 +54,12 @@ class Email extends Model {
   })
   @Column(DataType.STRING(60))
   email!: string;
+
+  @Column({
+    type: DataType.ENUM(...Object.values(Subscription)),
+    defaultValue: Subscription.FREE,
+  })
+  subscription!: Subscription;
 
   @AllowNull(false)
   @ForeignKey(() => Contact)

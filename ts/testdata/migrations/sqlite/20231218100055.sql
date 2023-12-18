@@ -21,6 +21,7 @@ CREATE TABLE `phone` (
 CREATE TABLE `email` (
   `id` integer NULL PRIMARY KEY AUTOINCREMENT,
   `email` varchar NOT NULL,
+  `subscription` text NULL DEFAULT 'free',
   `contact_id` integer NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,

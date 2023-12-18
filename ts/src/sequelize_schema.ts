@@ -12,10 +12,13 @@ export const loadModels = (dialect: string, models: ModelCtor[]) => {
     dialect: dialect,
     models: models,
   } as SequelizeOptions);
-  return loadSQL(sequelize);
+  return loadSQL(sequelize, dialect);
 };
 
-export const loadSQL = (sequelize: Sequelize) => {
+export const loadSQL = (sequelize: Sequelize, dialect: string) => {
+  if (!validDialects.includes(dialect)) {
+    throw new Error(`Invalid dialect ${dialect}`);
+  }
   const orderedModels = sequelize.modelManager
     .getModelsTopoSortedByForeignKey()
     ?.reverse();
@@ -23,9 +26,9 @@ export const loadSQL = (sequelize: Sequelize) => {
     throw new Error("no models found");
   }
   let sql = "";
+  const queryGenerator = sequelize.getQueryInterface().queryGenerator;
   for (const model of orderedModels) {
     const def = sequelize.modelManager.getModel(model.name);
-    const queryGenerator = sequelize.getQueryInterface().queryGenerator;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const attr = queryGenerator.attributesToSQL(
@@ -34,6 +37,20 @@ export const loadSQL = (sequelize: Sequelize) => {
       def.getAttributes(),
       Object.assign({}, def.options),
     );
+    // create enum types for postgres
+    if (dialect === "postgres") {
+      for (const key in attr) {
+        if (!attr[key].startsWith("ENUM")) {
+          continue;
+        }
+        const enumValues = attr[key].substring(
+          attr[key].indexOf("("),
+          attr[key].lastIndexOf(")") + 1,
+        );
+        const enumName = `enum_${def.tableName}_${key}`;
+        sql += `CREATE TYPE "${enumName}" AS ENUM${enumValues};\n`;
+      }
+    }
     sql +=
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore

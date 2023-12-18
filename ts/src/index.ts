@@ -39,7 +39,7 @@ y.command(
         dialect: argv.dialect,
         models: [absolutePath + "/*.ts"],
       } as SequelizeOptions);
-      console.log(loadSQL(sequelize));
+      console.log(loadSQL(sequelize, argv.dialect));
     } catch (e) {
       if (e instanceof Error) {
         console.error(e.message);

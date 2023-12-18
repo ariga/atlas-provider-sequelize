@@ -12,6 +12,7 @@ CREATE TABLE `contact` (
 CREATE TABLE `email` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(60) NOT NULL,
+  `subscription` enum('free','basic','premium') NULL DEFAULT "free",
   `contact_id` int NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
