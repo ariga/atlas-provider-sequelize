@@ -12,27 +12,41 @@ var loadModels = function (dialect, models) {
         dialect: dialect,
         models: models
     });
-    return (0, exports.loadSQL)(sequelize);
+    return (0, exports.loadSQL)(sequelize, dialect);
 };
 exports.loadModels = loadModels;
-var loadSQL = function (sequelize) {
+var loadSQL = function (sequelize, dialect) {
     var _a, _b, _c;
+    if (!validDialects.includes(dialect)) {
+        throw new Error("Invalid dialect ".concat(dialect));
+    }
     var orderedModels = (_a = sequelize.modelManager
         .getModelsTopoSortedByForeignKey()) === null || _a === void 0 ? void 0 : _a.reverse();
     if (!orderedModels) {
         throw new Error("no models found");
     }
     var sql = "";
+    var queryGenerator = sequelize.getQueryInterface().queryGenerator;
     for (var _i = 0, orderedModels_1 = orderedModels; _i < orderedModels_1.length; _i++) {
         var model = orderedModels_1[_i];
         var def = sequelize.modelManager.getModel(model.name);
-        var queryGenerator = sequelize.getQueryInterface().queryGenerator;
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         var attr = queryGenerator.attributesToSQL(
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         def.getAttributes(), Object.assign({}, def.options));
+        // create enum types for postgres
+        if (dialect === "postgres") {
+            for (var key in attr) {
+                if (!attr[key].startsWith("ENUM")) {
+                    continue;
+                }
+                var enumValues = attr[key].substring(attr[key].indexOf("("), attr[key].lastIndexOf(")") + 1);
+                var enumName = "enum_".concat(def.tableName, "_").concat(key);
+                sql += "CREATE TYPE \"".concat(enumName, "\" AS ENUM").concat(enumValues, ";\n");
+            }
+        }
         sql +=
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore

@@ -1,3 +1,5 @@
+-- Create enum type "enum_email_subscription"
+CREATE TYPE "public"."enum_email_subscription" AS ENUM ('free', 'basic', 'premium');
 -- Create "contact" table
 CREATE TABLE "public"."contact" (
   "id" serial NOT NULL,
@@ -13,6 +15,7 @@ CREATE UNIQUE INDEX "name-alias" ON "public"."contact" ("name", "alias");
 CREATE TABLE "public"."email" (
   "id" serial NOT NULL,
   "email" character varying(60) NOT NULL,
+  "subscription" "public"."enum_email_subscription" NULL DEFAULT 'free',
   "contact_id" integer NOT NULL,
   "created_at" timestamptz NOT NULL,
   "updated_at" timestamptz NOT NULL,

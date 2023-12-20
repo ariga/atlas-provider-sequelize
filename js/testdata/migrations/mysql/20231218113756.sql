@@ -4,6 +4,7 @@ CREATE TABLE `Recipes` (
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `instructions` text NOT NULL,
+  `meal` enum('breakfast','lunch','dinner','dessert') NULL DEFAULT "lunch",
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   `deletedAt` datetime NULL,

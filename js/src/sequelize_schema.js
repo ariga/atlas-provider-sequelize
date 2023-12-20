@@ -34,6 +34,20 @@ const loadSequelizeModels = (dialect, ...models) => {
     const attr = sequelize
       .getQueryInterface()
       .queryGenerator.attributesToSQL(def.getAttributes(), { ...def.options });
+    // create enum types for postgres
+    if (dialect === "postgres") {
+      for (const key in attr) {
+        if (!attr[key].startsWith("ENUM")) {
+          continue;
+        }
+        const enumValues = attr[key].substring(
+          attr[key].indexOf("("),
+          attr[key].lastIndexOf(")") + 1,
+        );
+        const enumName = `enum_${def.tableName}_${key}`;
+        sql += `CREATE TYPE "${enumName}" AS ENUM${enumValues};\n`;
+      }
+    }
     sql +=
       sequelize
         .getQueryInterface()
