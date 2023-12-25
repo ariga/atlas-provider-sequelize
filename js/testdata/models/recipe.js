@@ -15,6 +15,10 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       meal: {
         type: DataTypes.ENUM,
         values: ["breakfast", "lunch", "dinner", "dessert"],
@@ -31,6 +35,10 @@ module.exports = function (sequelize, DataTypes) {
       through: "RecipeIngredient",
       foreignKey: "recipeId",
       as: "ingredients",
+    });
+    Recipe.hasMany(models.User, {
+      foreignKey: "recipeId",
+      as: "users",
     });
   };
 
