@@ -3,6 +3,7 @@ const DataTypes = require("sequelize/lib/data-types");
 
 const validDialects = ["mysql", "postgres", "sqlite", "mariadb", "mssql"];
 
+// gets dialect and models that are functions of the form (sequelize, DataTypes) => Model
 // returns DDL string describing the models.
 const loadSequelizeModels = (dialect, ...models) => {
   if (!validDialects.includes(dialect)) {
@@ -28,6 +29,13 @@ const loadSequelizeModels = (dialect, ...models) => {
   let sql = "";
   if (sortedModels !== null) {
     for (const model of sortedModels.reverse()) {
+      sql += modelToSQL(sequelize, model, dialect);
+    }
+    return sql;
+  }
+  if (dialect === "sqlite") {
+    // in sqlite foreign keys constraints are not enforced by default
+    for (const model of sequelize.modelManager.models) {
       sql += modelToSQL(sequelize, model, dialect);
     }
     return sql;
