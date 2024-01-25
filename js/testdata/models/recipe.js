@@ -39,6 +39,8 @@ module.exports = function (sequelize, DataTypes) {
     Recipe.hasMany(models.User, {
       foreignKey: "recipeId",
       as: "users",
+      // sequelize defaults to CASCADE, which cause circular dependency for MSSQL
+      onDelete: "NO ACTION",
     });
   };
 

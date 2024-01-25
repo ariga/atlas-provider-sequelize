@@ -54,4 +54,4 @@ ALTER TABLE "public"."Recipes" ADD
  CONSTRAINT "Recipes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."Users" ("id") ON UPDATE CASCADE ON DELETE CASCADE;
 -- Modify "Users" table
 ALTER TABLE "public"."Users" ADD
- CONSTRAINT "Users_recipeId_fkey" FOREIGN KEY ("recipeId") REFERENCES "public"."Recipes" ("id") ON UPDATE CASCADE ON DELETE CASCADE;
+ CONSTRAINT "Users_recipeId_fkey" FOREIGN KEY ("recipeId") REFERENCES "public"."Recipes" ("id") ON UPDATE CASCADE ON DELETE NO ACTION;

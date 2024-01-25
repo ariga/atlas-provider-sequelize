@@ -50,4 +50,4 @@ ALTER TABLE `RecipeIngredients` ADD CONSTRAINT `RecipeIngredients_ibfk_1` FOREIG
 -- Modify "Recipes" table
 ALTER TABLE `Recipes` ADD CONSTRAINT `Recipes_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `Users` (`id`) ON UPDATE CASCADE ON DELETE CASCADE;
 -- Modify "Users" table
-ALTER TABLE `Users` ADD CONSTRAINT `Users_ibfk_1` FOREIGN KEY (`recipeId`) REFERENCES `Recipes` (`id`) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Users` ADD CONSTRAINT `Users_ibfk_1` FOREIGN KEY (`recipeId`) REFERENCES `Recipes` (`id`) ON UPDATE CASCADE ON DELETE NO ACTION;
