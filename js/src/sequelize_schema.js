@@ -81,6 +81,13 @@ function modelToSQL(sequelize, model, dialect, withOutFKs = false) {
       ...def.options,
       withoutForeignKeyConstraints: withOutFKs,
     });
+  // Remove from attr all the fields that have 'VIRTUAL' type
+  // https://sequelize.org/docs/v6/core-concepts/getters-setters-virtuals/#virtual-fields
+  for (const key in attr) {
+    if (attr[key].startsWith("VIRTUAL")) {
+      delete attr[key];
+    }
+  }
   // create enum types for postgres
   if (dialect === "postgres") {
     for (const key in attr) {

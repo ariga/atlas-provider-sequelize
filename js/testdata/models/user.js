@@ -11,6 +11,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      nameAndRecipeId: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return `${this.name} - ${this.recipeId}`;
+        },
+      },
     },
     {
       paranoid: true,
