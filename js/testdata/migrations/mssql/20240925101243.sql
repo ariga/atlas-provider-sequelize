@@ -16,7 +16,7 @@ CREATE TABLE [RecipeIngredients] (
   [createdAt] datetimeoffset(7) NOT NULL,
   [updatedAt] datetimeoffset(7) NOT NULL,
   [deletedAt] datetimeoffset(7) NULL,
-  CONSTRAINT [PK_RecipeIngredients] PRIMARY KEY CLUSTERED ([ingredientId] ASC)
+  CONSTRAINT [PK_RecipeIngredients] PRIMARY KEY CLUSTERED ([recipeId] ASC, [ingredientId] ASC)
 );
 -- Create index "recipe_ingredients_meassurement_type_meassurement_amount" to table: "RecipeIngredients"
 CREATE UNIQUE NONCLUSTERED INDEX [recipe_ingredients_meassurement_type_meassurement_amount] ON [RecipeIngredients] ([meassurementType] ASC, [meassurementAmount] ASC);
