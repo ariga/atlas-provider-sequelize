@@ -34,6 +34,11 @@ class Phone extends Model {
   @Column(DataType.STRING(20))
   phone!: string;
 
+  @Column(DataType.VIRTUAL)
+  get formattedPhone() {
+    return `+55 ${this.phone}`;
+  }
+
   @AllowNull(false)
   @ForeignKey(() => Contact)
   @Column(DataType.INTEGER)

@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      // add virtual field
       nameAndRecipeId: {
         type: DataTypes.VIRTUAL,
         get() {

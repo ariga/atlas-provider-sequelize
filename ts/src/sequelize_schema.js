@@ -36,6 +36,13 @@ var loadSQL = function (sequelize, dialect) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         def.getAttributes(), Object.assign({}, def.options));
+        // Remove from attr all the fields that have 'VIRTUAL' type
+        // https://sequelize.org/docs/v6/core-concepts/getters-setters-virtuals/#virtual-fields
+        for (var key in attr) {
+            if (attr[key].startsWith("VIRTUAL")) {
+                delete attr[key];
+            }
+        }
         // create enum types for postgres
         if (dialect === "postgres") {
             for (var key in attr) {
