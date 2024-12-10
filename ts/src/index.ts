@@ -35,9 +35,15 @@ y.command(
         return;
       }
       const absolutePath = path.resolve(argv.path);
+      const files = fs.readdirSync(absolutePath);
+      const models: string[] = [];
+      files.forEach((file) => {
+        if (file !== "index.ts" && file.endsWith(".ts"))
+          models.push(absolutePath + "/" + file);
+      });
       const sequelize = new Sequelize({
         dialect: argv.dialect,
-        models: [absolutePath + "/*.ts"],
+        models: models,
       } as SequelizeOptions);
       console.log(loadSQL(sequelize, argv.dialect));
     } catch (e) {
