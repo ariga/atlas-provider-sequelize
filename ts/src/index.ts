@@ -38,7 +38,7 @@ y.command(
       const files = fs.readdirSync(absolutePath);
       const models: string[] = [];
       files.forEach((file) => {
-        if (file !== "index.ts") models.push(absolutePath + "/" + file);
+        if (file !== "index.ts" && file.includes(".ts")) models.push(absolutePath + "/" + file);
       })
       const sequelize = new Sequelize({
         dialect: argv.dialect,
