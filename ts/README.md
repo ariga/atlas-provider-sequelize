@@ -86,7 +86,6 @@ data "external_schema" "sequelize" {
         "npx",
         "ts-node",
         "load.ts",
-        "mysql"
     ]
 }
 

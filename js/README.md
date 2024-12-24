@@ -85,7 +85,6 @@ data "external_schema" "sequelize" {
     program = [
         "node",
         "load.js",
-        "mysql"
     ]
 }
 
