@@ -15,10 +15,10 @@ jobs:
         language: [ js, ts ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18.16.0
+          node-version: 22.14.0
       - name: Cache node modules
         uses: actions/cache@v3
         with:
@@ -34,10 +34,10 @@ jobs:
   build-ts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18.16.0
+          node-version: 22.14.0
       - name: Cache node modules
         uses: actions/cache@v3
         with:
@@ -66,10 +66,10 @@ jobs:
         language: [ js, ts ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18.16.0
+          node-version: 22.14.0
       - name: Cache node modules
         uses: actions/cache@v3
         with:
