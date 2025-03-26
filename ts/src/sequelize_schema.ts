@@ -54,7 +54,7 @@ export const loadSQL = (sequelize: Sequelize, dialect: string) => {
           attr[key].indexOf("("),
           attr[key].lastIndexOf(")") + 1,
         );
-        const enumName = `enum_${def.tableName}_${key}`;
+        const enumName = `enum_${def.getTableName()}_${key}`;
         sql += `CREATE TYPE "${enumName}" AS ENUM${enumValues};\n`;
       }
     }

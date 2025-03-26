@@ -50,7 +50,7 @@ var loadSQL = function (sequelize, dialect) {
                     continue;
                 }
                 var enumValues = attr[key].substring(attr[key].indexOf("("), attr[key].lastIndexOf(")") + 1);
-                var enumName = "enum_".concat(def.tableName, "_").concat(key);
+                var enumName = "enum_".concat(def.getTableName(), "_").concat(key);
                 sql += "CREATE TYPE \"".concat(enumName, "\" AS ENUM").concat(enumValues, ";\n");
             }
         }
