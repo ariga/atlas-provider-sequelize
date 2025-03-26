@@ -57,13 +57,13 @@ var loadSQL = function (sequelize, dialect) {
         sql +=
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            queryGenerator.createTableQuery(def.tableName, attr, Object.assign({}, def.options)) + "\n";
+            queryGenerator.createTableQuery(def.getTableName(), attr, Object.assign({}, def.options)) + "\n";
         for (var _d = 0, _e = (_c = (_b = def.options) === null || _b === void 0 ? void 0 : _b.indexes) !== null && _c !== void 0 ? _c : []; _d < _e.length; _d++) {
             var index = _e[_d];
             sql +=
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                queryGenerator.addIndexQuery(def.tableName, index, Object.assign({}, def.options)) + ";\n";
+                queryGenerator.addIndexQuery(def.getTableName(), index, Object.assign({}, def.options)) + ";\n";
         }
     }
     return sql;
