@@ -19,8 +19,8 @@ class Email extends Model {
 describe("loadModels", () => {
   it("should load models correctly for schema identifier", () => {
     const expectedOutput =
-      "CREATE TABLE IF NOT EXISTS `public.email` (`id` INTEGER auto_increment , `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;\n";
-    const result = loadModels("mysql", [Email]);
+      'CREATE TABLE IF NOT EXISTS "public"."email" ("id"  SERIAL , "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL, PRIMARY KEY ("id"));\n';
+    const result = loadModels("postgres", [Email]);
     expect(result).toEqual(expectedOutput);
   });
 });
