@@ -54,7 +54,7 @@ export const loadSQL = (sequelize: Sequelize, dialect: string) => {
           attr[key].indexOf("("),
           attr[key].lastIndexOf(")") + 1,
         );
-        const enumName = `enum_${def.tableName}_${key}`;
+        const enumName = `enum_${def.getTableName()}_${key}`;
         sql += `CREATE TYPE "${enumName}" AS ENUM${enumValues};\n`;
       }
     }
@@ -62,7 +62,7 @@ export const loadSQL = (sequelize: Sequelize, dialect: string) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       queryGenerator.createTableQuery(
-        def.tableName,
+        def.getTableName(),
         attr,
         Object.assign({}, def.options),
       ) + "\n";
@@ -71,7 +71,7 @@ export const loadSQL = (sequelize: Sequelize, dialect: string) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         queryGenerator.addIndexQuery(
-          def.tableName,
+          def.getTableName(),
           index,
           Object.assign({}, def.options),
         ) + ";\n";

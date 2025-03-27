@@ -98,14 +98,14 @@ function modelToSQL(sequelize, model, dialect, withOutFKs = false) {
         attr[key].indexOf("("),
         attr[key].lastIndexOf(")") + 1,
       );
-      const enumName = `enum_${def.tableName}_${key}`;
+      const enumName = `enum_${def.getTableName()}_${key}`;
       sql += `CREATE TYPE "${enumName}" AS ENUM${enumValues};\n`;
     }
   }
   sql +=
     sequelize
       .getQueryInterface()
-      .queryGenerator.createTableQuery(def.tableName, attr, {
+      .queryGenerator.createTableQuery(def.getTableName(), attr, {
         ...def.options,
       }) + "\n";
 
@@ -113,7 +113,7 @@ function modelToSQL(sequelize, model, dialect, withOutFKs = false) {
     sql +=
       sequelize
         .getQueryInterface()
-        .queryGenerator.addIndexQuery(def.tableName, index) + ";\n";
+        .queryGenerator.addIndexQuery(def.getTableName(), index) + ";\n";
   }
   return sql;
 }
