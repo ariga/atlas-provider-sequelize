@@ -2,11 +2,18 @@
 
 ![CI](https://github.com/ariga/atlas-provider-sequelize/actions/workflows/ci.yaml/badge.svg)
 
-Load [Sequelize](https://sequelize.org/) models into an [Atlas](https://atlasgo.io) project.
+Use [Atlas](https://atlasgo.io/) with [Sequelize](https://sequelize.org/) to manage your database schema as code. By connecting your Sequelize models to Atlas,
+you can define and edit your schema directly in TypeScript or JavaScript. Atlas will then automatically plan and apply database schema migrations for you, 
+eliminating the need to write migrations manually.
+
+Atlas brings automated CI/CD workflows to your database, along with built-in support for [testing](https://atlasgo.io/testing/schema), [linting](https://atlasgo.io/versioned/lint),
+schema [drift detection](https://atlasgo.io/monitoring/drift-detection), and [schema monitoring](https://atlasgo.io/monitoring). It also allows you to extend Sequelize with 
+advanced database objects such as triggers, row-level security, and custom functions that are not supported natively.
 
 ### Use-cases
-1. **Declarative migrations** - use a Terraform-like `atlas schema apply --env sequelize` to apply your Sequelize schema to the database.
-2. **Automatic migration planning** - use `atlas migrate diff --env sequelize` to automatically plan a migration from the current database version to the Sequelize schema.
+1. [**Declarative migrations**](https://atlasgo.io/declarative/apply) - Use the Terraform-like `atlas schema apply --env sequelize` command to apply your Sequelize schema to the database.
+2. [**Automatic migration planning**](https://atlasgo.io/versioned/diff) - Use `atlas migrate diff --env sequelize` to automatically plan database schema changes and generate
+   a migration from the current database version to the desired version defined by your Sequelize schema.
 
 ### Installation
 
