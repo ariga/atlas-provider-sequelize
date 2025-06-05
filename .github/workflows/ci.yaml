@@ -82,7 +82,7 @@ jobs:
   integration-tests:
     strategy:
       matrix:
-        dialect: [ mysql, postgres, sqlite ]
+        dialect: [ mysql, postgres, sqlite, mssql ]
         language: [ js, ts ]
     runs-on: ubuntu-latest
     steps:
