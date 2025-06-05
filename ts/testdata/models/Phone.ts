@@ -27,7 +27,7 @@ class Phone extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @AllowNull(false)
   @Length({ min: 3, max: 20 })

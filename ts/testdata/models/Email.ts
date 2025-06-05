@@ -39,7 +39,7 @@ class Email extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @AllowNull(false)
   @Is("ValidEmail", (value) => {
