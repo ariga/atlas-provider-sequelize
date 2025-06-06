@@ -1,3 +1,7 @@
+-- atlas:pos `public.email`[type=table] test/load-models.test.ts:19:25
+-- atlas:pos user[type=table] test/load-models.test.ts:27:47
+-- atlas:pos post[type=table] test/load-models.test.ts:49:68
+
 CREATE TABLE IF NOT EXISTS `public.email` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL);
 CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(50) NOT NULL, `role` TEXT DEFAULT 'user', `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL);
 CREATE INDEX `user_name_idx` ON `user` (`name`);

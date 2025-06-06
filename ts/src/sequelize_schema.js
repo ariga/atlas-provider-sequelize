@@ -1,65 +1,167 @@
 "use strict";
-exports.__esModule = true;
-exports.loadSQL = exports.loadModels = void 0;
-var sequelize_typescript_1 = require("sequelize-typescript");
-var validDialects = ["mysql", "postgres", "sqlite", "mariadb", "mssql"];
-// load sql state of sequelize models
-var loadModels = function (dialect, models) {
-    if (!validDialects.includes(dialect)) {
-        throw new Error("Invalid dialect ".concat(dialect));
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
     }
-    var sequelize = new sequelize_typescript_1.Sequelize({
-        dialect: dialect,
-        models: models
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.loadSQL = exports.loadModels = exports.modelSource = void 0;
+const sequelize_typescript_1 = require("sequelize-typescript");
+const ts_morph_1 = require("ts-morph");
+const path = __importStar(require("path"));
+const validDialects = ["mysql", "postgres", "sqlite", "mariadb", "mssql"];
+/**
+ * Returns a map of model names to their source code positions.
+ * @param modelPaths - The paths to the model files.
+ * @param sequelize - The Sequelize instance.
+ * @returns A map of model names to their source code positions.
+ */
+const modelSource = (modelPaths, sequelize) => {
+    const project = new ts_morph_1.Project();
+    const srcMap = new Map();
+    for (const mp of modelPaths) {
+        const srcFile = project.addSourceFileAtPath(mp);
+        for (const cl of srcFile.getClasses()) {
+            const name = cl.getName();
+            if (!name || !sequelize.modelManager.getModel(name))
+                continue;
+            const relPath = path.relative(process.cwd(), mp).replace(/\\/g, "/");
+            srcMap.set(name, {
+                filePath: relPath,
+                start: cl.getStartLineNumber(),
+                end: cl.getEndLineNumber(),
+            });
+        }
+    }
+    return srcMap;
+};
+exports.modelSource = modelSource;
+const findModelPath = (modelClass) => {
+    return Object.keys(require.cache).find((filePath) => {
+        const cached = require.cache[filePath];
+        if (!cached || typeof cached.exports !== "object" || !cached.exports) {
+            return false;
+        }
+        if (cached.exports === modelClass) {
+            return true;
+        }
+        return Object.values(cached.exports).some((exportedValue) => exportedValue === modelClass);
     });
-    return (0, exports.loadSQL)(sequelize, dialect);
+};
+/**
+ * Returns a map of model names to their source code positions.
+ * @param models - The model classes.
+ * @param sequelize - The Sequelize instance.
+ * @returns A map of model names to their source code positions.
+ */
+const modelSourceFromClasses = (models, sequelize) => {
+    const paths = new Set();
+    for (const m of models) {
+        let p = findModelPath(m);
+        if (!p) {
+            if (!require.main || !require.main.filename) {
+                return undefined;
+            }
+            p = require.main?.filename;
+        }
+        paths.add(p);
+    }
+    return (0, exports.modelSource)(Array.from(paths), sequelize);
+};
+const loadModels = (dialect, models) => {
+    if (!validDialects.includes(dialect)) {
+        throw new Error(`Invalid dialect ${dialect}`);
+    }
+    const sequelize = new sequelize_typescript_1.Sequelize({
+        dialect: dialect,
+        models: models,
+    });
+    return (0, exports.loadSQL)(sequelize, dialect, modelSourceFromClasses(models, sequelize));
 };
 exports.loadModels = loadModels;
-var loadSQL = function (sequelize, dialect) {
-    var _a, _b, _c;
+const loadSQL = (sequelize, dialect, srcMap) => {
     if (!validDialects.includes(dialect)) {
-        throw new Error("Invalid dialect ".concat(dialect));
+        throw new Error(`Invalid dialect ${dialect}`);
     }
-    var orderedModels = (_a = sequelize.modelManager
-        .getModelsTopoSortedByForeignKey()) === null || _a === void 0 ? void 0 : _a.reverse();
+    const orderedModels = sequelize.modelManager
+        .getModelsTopoSortedByForeignKey()
+        ?.reverse();
     if (!orderedModels) {
         throw new Error("no models found");
     }
-    var sql = "";
-    var queryGenerator = sequelize.getQueryInterface().queryGenerator;
-    for (var _i = 0, orderedModels_1 = orderedModels; _i < orderedModels_1.length; _i++) {
-        var model = orderedModels_1[_i];
-        var def = sequelize.modelManager.getModel(model.name);
+    let sql = "";
+    if (srcMap && srcMap.size > 0) {
+        for (const model of orderedModels) {
+            const def = sequelize.modelManager.getModel(model.name);
+            const tableName = def.getTableName();
+            const pos = srcMap.get(model.name);
+            if (!pos)
+                continue;
+            sql += `-- atlas:pos ${tableName}[type=table] ${pos.filePath}:${pos.start}:${pos.end}\n`;
+        }
+        // Add extra newline to separate comments from SQL definitions
+        sql += "\n";
+    }
+    const queryGenerator = sequelize.getQueryInterface().queryGenerator;
+    for (const model of orderedModels) {
+        const def = sequelize.modelManager.getModel(model.name);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        var attr = queryGenerator.attributesToSQL(
+        const attr = queryGenerator.attributesToSQL(
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         def.getAttributes(), Object.assign({}, def.options));
         // Remove from attr all the fields that have 'VIRTUAL' type
         // https://sequelize.org/docs/v6/core-concepts/getters-setters-virtuals/#virtual-fields
-        for (var key in attr) {
+        for (const key in attr) {
             if (attr[key].startsWith("VIRTUAL")) {
                 delete attr[key];
             }
         }
         // create enum types for postgres
         if (dialect === "postgres") {
-            for (var key in attr) {
+            for (const key in attr) {
                 if (!attr[key].startsWith("ENUM")) {
                     continue;
                 }
-                var enumValues = attr[key].substring(attr[key].indexOf("("), attr[key].lastIndexOf(")") + 1);
-                var enumName = "enum_".concat(def.getTableName(), "_").concat(key);
-                sql += "CREATE TYPE \"".concat(enumName, "\" AS ENUM").concat(enumValues, ";\n");
+                const enumValues = attr[key].substring(attr[key].indexOf("("), attr[key].lastIndexOf(")") + 1);
+                const enumName = `enum_${def.getTableName()}_${key}`;
+                sql += `CREATE TYPE "${enumName}" AS ENUM${enumValues};\n`;
             }
         }
         sql +=
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             queryGenerator.createTableQuery(def.getTableName(), attr, Object.assign({}, def.options)) + "\n";
-        for (var _d = 0, _e = (_c = (_b = def.options) === null || _b === void 0 ? void 0 : _b.indexes) !== null && _c !== void 0 ? _c : []; _d < _e.length; _d++) {
-            var index = _e[_d];
+        for (const index of def.options?.indexes ?? []) {
             sql +=
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore

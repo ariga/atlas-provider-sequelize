@@ -3,7 +3,7 @@ import {
   AutoIncrement,
   Column,
   DataType,
-  Model,
+  Model as SequelizeModel,
   PrimaryKey,
   Table,
   ForeignKey,
@@ -14,20 +14,22 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 
+import { describe, it, expect } from "@jest/globals";
+
 @Table({ tableName: "email", schema: "public" })
-class Email extends Model {
+class Email extends SequelizeModel {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 }
 
 @Table({ tableName: "user" })
-class User extends Model {
+class User extends SequelizeModel {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @Index({ name: "user_name_idx" })
   @Length({ min: 1, max: 50 })
@@ -45,11 +47,11 @@ class User extends Model {
 }
 
 @Table({ tableName: "post" })
-class Post extends Model {
+class Post extends SequelizeModel {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  declare id: number;
 
   @Column({
     type: DataType.STRING(255),

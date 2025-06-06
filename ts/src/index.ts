@@ -5,7 +5,7 @@ import { hideBin } from "yargs/helpers";
 import fs from "fs";
 import { Sequelize, SequelizeOptions } from "sequelize-typescript";
 import path from "path";
-import { loadSQL } from "./sequelize_schema";
+import { loadSQL, modelSource } from "./sequelize_schema";
 
 const y = yargs(hideBin(process.argv))
   .usage(
@@ -45,7 +45,8 @@ y.command(
         dialect: argv.dialect,
         models: models,
       } as SequelizeOptions);
-      console.log(loadSQL(sequelize, argv.dialect));
+      const srcMap = modelSource(models, sequelize);
+      console.log(loadSQL(sequelize, argv.dialect, srcMap));
     } catch (e) {
       if (e instanceof Error) {
         console.error(e.message);

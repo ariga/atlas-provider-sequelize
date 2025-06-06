@@ -1,9 +1,74 @@
 import { ModelCtor } from "sequelize-typescript/dist/model/model/model";
 import { Sequelize, SequelizeOptions } from "sequelize-typescript";
+import { Project } from "ts-morph";
+import * as path from "path";
 
 const validDialects = ["mysql", "postgres", "sqlite", "mariadb", "mssql"];
 
-// load sql state of sequelize models
+/**
+ * Returns a map of model names to their source code positions.
+ * @param modelPaths - The paths to the model files.
+ * @param sequelize - The Sequelize instance.
+ * @returns A map of model names to their source code positions.
+ */
+export const modelSource = (modelPaths: string[], sequelize: Sequelize) => {
+  const project = new Project();
+  const srcMap = new Map<
+    string,
+    { filePath: string; start: number; end: number }
+  >();
+  for (const mp of modelPaths) {
+    const srcFile = project.addSourceFileAtPath(mp);
+    for (const cl of srcFile.getClasses()) {
+      const name = cl.getName();
+      if (!name || !sequelize.modelManager.getModel(name)) continue;
+      const relPath = path.relative(process.cwd(), mp).replace(/\\/g, "/");
+      srcMap.set(name, {
+        filePath: relPath,
+        start: cl.getStartLineNumber(),
+        end: cl.getEndLineNumber(),
+      });
+    }
+  }
+  return srcMap;
+};
+
+const findModelPath = (modelClass: ModelCtor): string | undefined => {
+  return Object.keys(require.cache).find((filePath) => {
+    const cached = require.cache[filePath];
+    if (!cached || typeof cached.exports !== "object" || !cached.exports) {
+      return false;
+    }
+    if (cached.exports === modelClass) {
+      return true;
+    }
+    return Object.values(cached.exports).some(
+      (exportedValue) => exportedValue === modelClass,
+    );
+  });
+};
+
+/**
+ * Returns a map of model names to their source code positions.
+ * @param models - The model classes.
+ * @param sequelize - The Sequelize instance.
+ * @returns A map of model names to their source code positions.
+ */
+const modelSourceFromClasses = (models: ModelCtor[], sequelize: Sequelize) => {
+  const paths = new Set<string>();
+  for (const m of models) {
+    let p = findModelPath(m);
+    if (!p) {
+      if (!require.main || !require.main.filename) {
+        return undefined;
+      }
+      p = require.main?.filename;
+    }
+    paths.add(p);
+  }
+  return modelSource(Array.from(paths), sequelize);
+};
+
 export const loadModels = (dialect: string, models: ModelCtor[]) => {
   if (!validDialects.includes(dialect)) {
     throw new Error(`Invalid dialect ${dialect}`);
@@ -12,10 +77,14 @@ export const loadModels = (dialect: string, models: ModelCtor[]) => {
     dialect: dialect,
     models: models,
   } as SequelizeOptions);
-  return loadSQL(sequelize, dialect);
+  return loadSQL(sequelize, dialect, modelSourceFromClasses(models, sequelize));
 };
 
-export const loadSQL = (sequelize: Sequelize, dialect: string) => {
+export const loadSQL = (
+  sequelize: Sequelize,
+  dialect: string,
+  srcMap?: Map<string, { filePath: string; start: number; end: number }>,
+) => {
   if (!validDialects.includes(dialect)) {
     throw new Error(`Invalid dialect ${dialect}`);
   }
@@ -26,6 +95,19 @@ export const loadSQL = (sequelize: Sequelize, dialect: string) => {
     throw new Error("no models found");
   }
   let sql = "";
+
+  if (srcMap && srcMap.size > 0) {
+    for (const model of orderedModels) {
+      const def = sequelize.modelManager.getModel(model.name);
+      const tableName = def.getTableName();
+      const pos = srcMap.get(model.name);
+      if (!pos) continue;
+      sql += `-- atlas:pos ${tableName}[type=table] ${pos.filePath}:${pos.start}:${pos.end}\n`;
+    }
+    // Add extra newline to separate comments from SQL definitions
+    sql += "\n";
+  }
+
   const queryGenerator = sequelize.getQueryInterface().queryGenerator;
   for (const model of orderedModels) {
     const def = sequelize.modelManager.getModel(model.name);
