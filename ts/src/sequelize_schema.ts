@@ -102,7 +102,7 @@ export const loadSQL = (
       const tableName = def.getTableName();
       const pos = srcMap.get(model.name);
       if (!pos) continue;
-      sql += `-- atlas:pos ${tableName}[type=table] ${pos.filePath}:${pos.start}:${pos.end}\n`;
+      sql += `-- atlas:pos ${tableName}[type=table] ${pos.filePath}:${pos.start}-${pos.end}\n`;
     }
     // Add extra newline to separate comments from SQL definitions
     sql += "\n";
