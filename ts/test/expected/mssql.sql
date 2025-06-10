@@ -1,6 +1,6 @@
--- atlas:pos [public].[email][type=table] test/load-models.test.ts:19:25
--- atlas:pos user[type=table] test/load-models.test.ts:27:47
--- atlas:pos post[type=table] test/load-models.test.ts:49:68
+-- atlas:pos [public].[email][type=table] test/load-models.test.ts:19-25
+-- atlas:pos user[type=table] test/load-models.test.ts:27-47
+-- atlas:pos post[type=table] test/load-models.test.ts:49-68
 
 IF OBJECT_ID('[public].[email]', 'U') IS NULL CREATE TABLE [public].[email] ([id] INTEGER IDENTITY(1,1) , [createdAt] DATETIMEOFFSET NOT NULL, [updatedAt] DATETIMEOFFSET NOT NULL, PRIMARY KEY ([id]));
 IF OBJECT_ID('[user]', 'U') IS NULL CREATE TABLE [user] ([id] INTEGER IDENTITY(1,1) , [name] NVARCHAR(50) NOT NULL, [role] VARCHAR(255) CHECK ([role] IN(N'admin', N'user', N'guest')), [createdAt] DATETIMEOFFSET NOT NULL, [updatedAt] DATETIMEOFFSET NOT NULL, PRIMARY KEY ([id]));
