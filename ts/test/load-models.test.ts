@@ -79,7 +79,7 @@ describe("loadModels", () => {
   describe("all dialects", () => {
     dialects.forEach((dialect) => {
       it(`should generate correct SQL for ${dialect}`, () => {
-        const result = loadModels(dialect, models);
+        const result = replaceCwd(loadModels(dialect, models));
         const expected = readExpectedOutput(dialect);
         expect(result.trim()).toEqual(expected);
       });
@@ -99,3 +99,10 @@ describe("loadModels", () => {
     });
   });
 });
+
+function replaceCwd(text: string): string {
+  const cwd = path.join(process.cwd(), path.sep);
+  // Escape special characters in CWD
+  const escapedCwd = cwd.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return text.replace(new RegExp(escapedCwd, "g"), "");
+}

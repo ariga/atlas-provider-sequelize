@@ -22,9 +22,8 @@ export const modelSource = (modelPaths: string[], sequelize: Sequelize) => {
     for (const cl of srcFile.getClasses()) {
       const name = cl.getName();
       if (!name || !sequelize.modelManager.getModel(name)) continue;
-      const relPath = path.relative(process.cwd(), mp).replace(/\\/g, "/");
       srcMap.set(name, {
-        filePath: relPath,
+        filePath: path.resolve(mp),
         start: cl.getStartLineNumber(),
         end: cl.getEndLineNumber(),
       });

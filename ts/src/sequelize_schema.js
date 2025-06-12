@@ -53,9 +53,8 @@ const modelSource = (modelPaths, sequelize) => {
             const name = cl.getName();
             if (!name || !sequelize.modelManager.getModel(name))
                 continue;
-            const relPath = path.relative(process.cwd(), mp).replace(/\\/g, "/");
             srcMap.set(name, {
-                filePath: relPath,
+                filePath: path.resolve(mp),
                 start: cl.getStartLineNumber(),
                 end: cl.getEndLineNumber(),
             });
