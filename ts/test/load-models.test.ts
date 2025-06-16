@@ -13,6 +13,8 @@ import {
 } from "sequelize-typescript";
 import * as fs from "fs";
 import * as path from "path";
+import { Author } from "./models/Author";
+import { Book } from "./models/Book";
 
 import { describe, it, expect } from "@jest/globals";
 
@@ -73,6 +75,7 @@ function readExpectedOutput(dialect: string): string {
 }
 
 const models = [Email, User, Post];
+const circularModels = [Author, Book];
 const dialects = ["postgres", "mysql", "mariadb", "sqlite", "mssql"];
 
 describe("loadModels", () => {
@@ -85,6 +88,17 @@ describe("loadModels", () => {
       });
     });
   });
+
+  describe("circular foreign key dependencies", () => {
+    dialects.forEach((dialect) => {
+      it(`should handle circular FK dependencies for ${dialect}`, () => {
+        const result = replaceCwd(loadModels(dialect, circularModels));
+        const expected = readExpectedOutput(`${dialect}-fk-deps`);
+        expect(result.trim()).toEqual(expected);
+      });
+    });
+  });
+
   describe("Edge cases", () => {
     it("should throw error for unsupported dialect", () => {
       expect(() => {
