@@ -29,4 +29,4 @@ export class Author extends SequelizeModel {
 
   @BelongsTo(() => Book)
   favoriteBook?: Book;
-} 
+}
