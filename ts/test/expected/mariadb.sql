@@ -1,6 +1,6 @@
--- atlas:pos `public`.`email`[type=table] test/load-models.test.ts:19-25
--- atlas:pos user[type=table] test/load-models.test.ts:27-47
--- atlas:pos post[type=table] test/load-models.test.ts:49-68
+-- atlas:pos `public`.`email`[type=table] test/load-models.test.ts:21-27
+-- atlas:pos user[type=table] test/load-models.test.ts:29-49
+-- atlas:pos post[type=table] test/load-models.test.ts:51-70
 
 CREATE TABLE IF NOT EXISTS `public`.`email` (`id` INTEGER auto_increment , `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
 CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER auto_increment , `name` VARCHAR(50) NOT NULL, `role` ENUM('admin', 'user', 'guest') DEFAULT 'user', `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;

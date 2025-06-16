@@ -95,6 +95,51 @@ const modelSourceFromClasses = (models, sequelize) => {
     }
     return (0, exports.modelSource)(Array.from(paths), sequelize);
 };
+function modelToSQL(sequelize, model, dialect, withoutForeignKeyConstraints = false) {
+    const queryGenerator = sequelize.getQueryInterface().queryGenerator;
+    const def = sequelize.modelManager.getModel(model.name);
+    if (!def) {
+        return "";
+    }
+    const options = { ...def.options };
+    const attributesToSQLOptions = { ...options, withoutForeignKeyConstraints };
+    let sql = "";
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const attr = queryGenerator.attributesToSQL(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    def.getAttributes(), attributesToSQLOptions);
+    // Remove from attr all the fields that have 'VIRTUAL' type
+    // https://sequelize.org/docs/v6/core-concepts/getters-setters-virtuals/#virtual-fields
+    for (const key in attr) {
+        if (attr[key].startsWith("VIRTUAL")) {
+            delete attr[key];
+        }
+    }
+    // create enum types for postgres
+    if (dialect === "postgres") {
+        for (const key in attr) {
+            if (!attr[key].startsWith("ENUM")) {
+                continue;
+            }
+            const enumValues = attr[key].substring(attr[key].indexOf("("), attr[key].lastIndexOf(")") + 1);
+            const enumName = `enum_${def.getTableName()}_${key}`;
+            sql += `CREATE TYPE "${enumName}" AS ENUM${enumValues};\n`;
+        }
+    }
+    sql +=
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        queryGenerator.createTableQuery(def.getTableName(), attr, options) + "\n";
+    for (const index of def.options?.indexes ?? []) {
+        sql +=
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            queryGenerator.addIndexQuery(def.getTableName(), index, options) + ";\n";
+    }
+    return sql;
+}
 const loadModels = (dialect, models) => {
     if (!validDialects.includes(dialect)) {
         throw new Error(`Invalid dialect ${dialect}`);
@@ -112,14 +157,16 @@ const loadSQL = (sequelize, dialect, srcMap) => {
     }
     const orderedModels = sequelize.modelManager
         .getModelsTopoSortedByForeignKey()
-        ?.reverse();
-    if (!orderedModels) {
-        throw new Error("no models found");
-    }
+        ?.map((m) => sequelize.modelManager.getModel(m.name))
+        .filter((m) => !!m)
+        .reverse();
     let sql = "";
     if (srcMap && srcMap.size > 0) {
-        for (const model of orderedModels) {
+        const modelsForSrcMap = orderedModels ?? sequelize.modelManager.models;
+        for (const model of modelsForSrcMap) {
             const def = sequelize.modelManager.getModel(model.name);
+            if (!def)
+                continue;
             const tableName = def.getTableName();
             const pos = srcMap.get(model.name);
             if (!pos)
@@ -129,42 +176,43 @@ const loadSQL = (sequelize, dialect, srcMap) => {
         // Add extra newline to separate comments from SQL definitions
         sql += "\n";
     }
-    const queryGenerator = sequelize.getQueryInterface().queryGenerator;
-    for (const model of orderedModels) {
-        const def = sequelize.modelManager.getModel(model.name);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const attr = queryGenerator.attributesToSQL(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        def.getAttributes(), Object.assign({}, def.options));
-        // Remove from attr all the fields that have 'VIRTUAL' type
-        // https://sequelize.org/docs/v6/core-concepts/getters-setters-virtuals/#virtual-fields
-        for (const key in attr) {
-            if (attr[key].startsWith("VIRTUAL")) {
-                delete attr[key];
-            }
+    if (orderedModels) {
+        for (const model of orderedModels) {
+            sql += modelToSQL(sequelize, model, dialect);
         }
-        // create enum types for postgres
-        if (dialect === "postgres") {
-            for (const key in attr) {
-                if (!attr[key].startsWith("ENUM")) {
-                    continue;
-                }
-                const enumValues = attr[key].substring(attr[key].indexOf("("), attr[key].lastIndexOf(")") + 1);
-                const enumName = `enum_${def.getTableName()}_${key}`;
-                sql += `CREATE TYPE "${enumName}" AS ENUM${enumValues};\n`;
-            }
+        return sql;
+    }
+    // In SQLite, foreign key constraints are not enforced by default, so there's no need for special handling of circular dependencies.
+    if (dialect === "sqlite") {
+        for (const model of sequelize.modelManager.models) {
+            sql += modelToSQL(sequelize, model, dialect);
         }
-        sql +=
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            queryGenerator.createTableQuery(def.getTableName(), attr, Object.assign({}, def.options)) + "\n";
-        for (const index of def.options?.indexes ?? []) {
-            sql +=
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                queryGenerator.addIndexQuery(def.getTableName(), index, Object.assign({}, def.options)) + ";\n";
+        return sql;
+    }
+    // If there are circular dependencies, first create tables without foreign keys, then add them.
+    for (const model of sequelize.modelManager.models) {
+        sql += modelToSQL(sequelize, model, dialect, true);
+    }
+    const queryInterface = sequelize.getQueryInterface();
+    for (const model of sequelize.modelManager.models) {
+        const attributes = model.getAttributes();
+        for (const key of Object.keys(attributes)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const attribute = attributes[key];
+            if (!attribute.references) {
+                continue;
+            }
+            // @ts-expect-error - queryGenerator is not in the type definition
+            const query = queryInterface.queryGenerator.attributesToSQL({
+                // @ts-expect-error - normalizeAttribute is not in the type definition
+                [key]: queryInterface.normalizeAttribute(attribute),
+            }, {
+                context: "changeColumn",
+                table: model.getTableName(),
+            });
+            // @ts-expect-error - queryGenerator is not in the type definition
+            sql += queryInterface.queryGenerator.changeColumnQuery(model.getTableName(), query);
+            sql += "\n";
         }
     }
     return sql;
