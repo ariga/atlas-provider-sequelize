@@ -12,6 +12,9 @@ on:
 
 jobs:
   npm-publish:
+    permissions:
+      id-token: write  # Required for OIDC
+      contents: read
     strategy:
       matrix:
         language: [ js, ts ]
@@ -36,7 +39,5 @@ jobs:
         run: |
           npm version $RELEASE_VERSION
       - name: publish the npm package
-        uses: JS-DevTools/npm-publish@v2
-        with:
-          package: ./${{ matrix.language }}
-          token: ${{ secrets.NPM_TOKEN }}
+        working-directory: ./${{ matrix.language }}
+        run: npm publish
