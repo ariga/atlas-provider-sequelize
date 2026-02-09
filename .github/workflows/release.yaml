@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22.14.0
+          registry-url: 'https://registry.npmjs.org'
       - name: Set version env
         id: set_version
         ## if version is not provided as input, use the tag name
