@@ -41,4 +41,6 @@ jobs:
           npm version $RELEASE_VERSION
       - name: publish the npm package
         working-directory: ./${{ matrix.language }}
-        run: npm publish
+        run:
+          # https://github.com/actions/setup-node/issues/1440#issuecomment-3571890875
+          NODE_AUTH_TOKEN="" npm publish
