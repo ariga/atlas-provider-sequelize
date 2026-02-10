@@ -7,6 +7,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "url": "https://github.com/ariga/atlas-provider-sequelize"
+  },
   "scripts": {
     "fmt": "eslint src/**/*.ts --fix && prettier --write .",
     "fmt-check": "eslint src/**/*.ts --max-warnings=0 && prettier --check .",
