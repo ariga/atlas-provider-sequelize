@@ -30,4 +30,11 @@ env "sequelize" {
       diff = "{{ sql . \"  \" }}"
     }
   }
+  diff {
+    skip {
+      # This skip the constraint rename change,
+      # which is not supported by the ORM yet.
+      rename_constraint = true
+    }
+  }
 }
