@@ -15,18 +15,18 @@ jobs:
         language: [ js, ts ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.14.0
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: ./${{ matrix.language }}/node_modules
           key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: node_modules-
       - name: Install
-        run: npm install
+        run: npm ci
         working-directory: ./${{ matrix.language }}
       - name: Lint check
         run: npm run fmt-check
@@ -34,18 +34,18 @@ jobs:
   build-ts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.14.0
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: ./ts/node_modules
           key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: node_modules-
       - name: Install
-        run: npm install
+        run: npm ci --ignore-scripts=false
         working-directory: ./ts
       - name: Build Typescript Files
         run: npm run build
@@ -62,18 +62,18 @@ jobs:
   ts-unit-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.14.0
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: ./ts/node_modules
           key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: node_modules-
       - name: Install
-        run: npm install
+        run: npm ci --ignore-scripts=false
         working-directory: ./ts
       - name: Run Unit Tests
         run: npm run test
@@ -86,20 +86,20 @@ jobs:
         language: [ js, ts ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.14.0
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: ./${{ matrix.language }}/node_modules
           key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: node_modules-
       - name: Install
-        run: npm install
+        run: npm ci --ignore-scripts=false
         working-directory: ./${{ matrix.language }}
-      - uses: ariga/setup-atlas@master
+      - uses: ariga/setup-atlas@2f3c785c89a15e1c0d07bcae3900fb5feb969eea # v0
       - name: Run Test as Standalone
         working-directory: ./${{ matrix.language }}/testdata
         run: |
